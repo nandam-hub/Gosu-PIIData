@@ -65,5 +65,4 @@ jobs:
         type pii-scan-report.log
         ) else (
         echo "PII scan report not found!"
-        #exit /b 1
         )
