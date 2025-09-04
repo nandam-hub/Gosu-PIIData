@@ -1,10 +1,6 @@
 name: PII Data Scan Pipeline
 
 on:
-  push:
-    branches: [ none ]
-  pull_request:
-    branches: [ none ]
   workflow_dispatch:
   
 jobs:
@@ -21,20 +17,20 @@ jobs:
         java-version: '11'
         distribution: 'temurin'
 
-    - name: Download Gosu Runtime
+    - name: Download Gosu Distribution
       shell: bash
       run: |
-        echo "Downloading Gosu runtime..."
-        mkdir -p gosu/lib
-        curl -L -o gosu/lib/gosu-core.jar https://repo1.maven.org/maven2/org/gosu-lang/gosu-core/1.14.18/gosu-core-1.14.18.jar
-        curl -L -o gosu/lib/gosu-lang.jar https://repo1.maven.org/maven2/org/gosu-lang/gosu/1.14.18/gosu-1.14.18.jar
-        curl -L -o gosu/lib/gosu-parser.jar https://repo1.maven.org/maven2/org/gosu-lang/gosu-parser/1.14.18/gosu-parser-1.14.18.jar
+        echo "Downloading Gosu distribution..."
+        curl -L -o gosu.zip https://github.com/gosu-lang/gosu-lang/releases/download/v1.14.18/gosu-1.14.18.zip
+        unzip gosu.zip -d gosu_dist
 
-    - name: Verify Gosu JARs
+    - name: Verify Gosu Unzip
       shell: cmd
       run: |
-        echo Listing Gosu lib directory...
-        dir gosu\lib
+        echo Listing Gosu dist folder...
+        dir gosu_dist
+        echo Listing Gosu bin folder...
+        dir gosu_dist\gosu-1.14.18\bin
 
     - name: Build Gosu Applications
       shell: cmd
@@ -46,7 +42,7 @@ jobs:
     - name: Run PII Data Scan
       shell: cmd
       run: |
-        echo Running PII Scanner with Java + Gosu runtime...
+        echo Running PII Scanner...
         gosu_dist\gosu-1.14.18\bin\gosu.cmd PIIScanner.gs
         
     - name: Upload PII Scan Report
