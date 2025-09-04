@@ -24,13 +24,17 @@ jobs:
         curl -L -o gosu.zip http://search.maven.org/remotecontent?filepath=org/gosu-lang/gosu/gosu/1.14.16/gosu-1.14.16-full.zip
         unzip gosu.zip -d gosu_dist
 
-    - name: Verify Gosu Unzip
-      shell: cmd
+    - name: Find gosu.cmd
+      id: find_gosu
+      shell: pwsh
       run: |
-        echo Listing Gosu dist folder...
-        dir gosu_dist
-        echo Listing Gosu bin folder...
-        dir gosu_dist\gosu-1.14.18\bin
+          $gosu = Get-ChildItem -Path gosu_dist -Recurse -Filter "gosu.cmd" | Select-Object -First 1
+          if (-not $gosu) {
+            Write-Error "gosu.cmd not found!"
+            exit 1
+          }
+          echo "Found gosu.cmd at $($gosu.FullName)"
+          echo "GOSU_CMD=$($gosu.FullName)" | Out-File -FilePath $Env:GITHUB_ENV -Append
 
     - name: Build Gosu Applications
       shell: cmd
