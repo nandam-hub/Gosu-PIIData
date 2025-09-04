@@ -22,19 +22,21 @@ jobs:
         distribution: 'temurin'
         
     - name: Setup Gosu Runtime
+      shell: cmd
       run: |
-        echo "Setting up Gosu runtime..."
+        echo Setting up Gosu runtime...
         set GOSU_CLASSPATH=gosu\gosu.jar
-        set PATH=%PATH%;%CD%
         
     - name: Build Gosu Applications
+      shell: cmd
       run: |
-        echo "Building Gosu applications..."
-        call build-app.bat
+        echo Building Gosu applications...
+        build-app.bat
         
     - name: Run PII Data Scan
+      shell: cmd
       run: |
-        echo "Scanning for PII data..."
+        echo Scanning for PII data...
         java -cp "gosu\gosu.jar" gw.lang.Gosu PIIScanner.gs
         
     - name: Upload PII Scan Report
