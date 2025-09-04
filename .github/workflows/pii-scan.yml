@@ -25,7 +25,6 @@ jobs:
       shell: cmd
       run: |
         echo Setting up Gosu runtime...
-        #set GOSU_CLASSPATH=gosu\gosu.jar
         dir gosu.bat
         dir gosu\gosu.jar
         
@@ -36,12 +35,18 @@ jobs:
         if exist dist rmdir /s /q dist
         build-app.bat
         
-    - name: Run PII Data Scan
+    - name: Run PII Data Scan (using gosu.bat)
       shell: cmd
       run: |
-        echo Scanning for PII data...
-        #java -cp "gosu\gosu.jar" gw.lang.Gosu PIIScanner.gs
+        echo Running PII Scanner with gosu.bat...
         gosu.bat PIIScanner.gs
+
+    # Alternative: Run directly with java if gosu.bat is not configured
+    # - name: Run PII Data Scan (using java)
+    #   shell: cmd
+    #   run: |
+    #     echo Running PII Scanner with java...
+    #     java -cp "gosu\gosu.jar;." gw.lang.Gosu PIIScanner.gs
         
     - name: Upload PII Scan Report
       uses: actions/upload-artifact@v4
@@ -50,6 +55,7 @@ jobs:
         path: pii-scan-report.log
         
     - name: Display Report Summary
+      shell: cmd
       run: |
-        echo "PII Scan Report Summary:"
+        echo PII Scan Report Summary:
         type pii-scan-report.log
