@@ -20,33 +20,34 @@ jobs:
       with:
         java-version: '11'
         distribution: 'temurin'
-        
-    - name: Setup Gosu Runtime
+
+    - name: Download Gosu Runtime
+      shell: bash
+      run: |
+        echo "Downloading Gosu runtime..."
+        mkdir -p gosu/lib
+        curl -L -o gosu/lib/gosu-core.jar https://repo1.maven.org/maven2/org/gosu-lang/gosu-core/1.14.18/gosu-core-1.14.18.jar
+        curl -L -o gosu/lib/gosu-lang.jar https://repo1.maven.org/maven2/org/gosu-lang/gosu/1.14.18/gosu-1.14.18.jar
+        curl -L -o gosu/lib/gosu-parser.jar https://repo1.maven.org/maven2/org/gosu-lang/gosu-parser/1.14.18/gosu-parser-1.14.18.jar
+
+    - name: Verify Gosu JARs
       shell: cmd
       run: |
-        echo Setting up Gosu runtime...
-        dir gosu.bat
-        dir gosu\gosu.jar
-        
+        echo Listing Gosu lib directory...
+        dir gosu\lib
+
     - name: Build Gosu Applications
       shell: cmd
       run: |
         echo Building Gosu applications...
         if exist dist rmdir /s /q dist
         build-app.bat
-        
-    - name: Run PII Data Scan (using gosu.bat)
+
+    - name: Run PII Data Scan
       shell: cmd
       run: |
-        echo Running PII Scanner with gosu.bat...
-        gosu.bat PIIScanner.gs
-
-    # Alternative: Run directly with java if gosu.bat is not configured
-    # - name: Run PII Data Scan (using java)
-    #   shell: cmd
-    #   run: |
-    #     echo Running PII Scanner with java...
-    #     java -cp "gosu\gosu.jar;." gw.lang.Gosu PIIScanner.gs
+        echo Running PII Scanner with Java + Gosu runtime...
+        java -cp "gosu\lib\*;." gw.lang.Gosu PIIScanner.gs
         
     - name: Upload PII Scan Report
       uses: actions/upload-artifact@v4
