@@ -21,7 +21,7 @@ jobs:
       shell: bash
       run: |
         echo "Downloading Gosu distribution..."
-        curl -L -o gosu.zip https://github.com/gosu-lang/gosu-lang/releases/download/v1.14.18/gosu-1.14.18.zip
+        curl -L -o gosu.zip http://search.maven.org/remotecontent?filepath=org/gosu-lang/gosu/gosu/1.14.16/gosu-1.14.16-full.zip
         unzip gosu.zip -d gosu_dist
 
     - name: Verify Gosu Unzip
