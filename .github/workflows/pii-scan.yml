@@ -47,7 +47,7 @@ jobs:
       shell: cmd
       run: |
         echo Running PII Scanner with Java + Gosu runtime...
-        java -cp "gosu\lib\*;." gw.lang.Gosu PIIScanner.gs
+        gosu_dist\gosu-1.14.18\bin\gosu.cmd PIIScanner.gs
         
     - name: Upload PII Scan Report
       uses: actions/upload-artifact@v4
