@@ -46,8 +46,10 @@ jobs:
     - name: Run PII Data Scan
       shell: cmd
       run: |
-        echo Running PII Scanner...
-        gosu_dist\gosu-1.14.18\bin\gosu.cmd PIIScanner.gs
+         echo Running PII Scanner...
+         pushd "%GOSU_CMD%\.."  || exit /b 1
+         gosu.cmd ..\..\..\PIIScanner.gs
+         popd
         
     - name: Upload PII Scan Report
       uses: actions/upload-artifact@v4
