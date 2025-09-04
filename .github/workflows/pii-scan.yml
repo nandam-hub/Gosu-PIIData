@@ -25,7 +25,9 @@ jobs:
       shell: cmd
       run: |
         echo Setting up Gosu runtime...
-        set GOSU_CLASSPATH=gosu\gosu.jar
+        #set GOSU_CLASSPATH=gosu\gosu.jar
+        dir gosu.bat
+        dir gosu\gosu.jar
         
     - name: Build Gosu Applications
       shell: cmd
@@ -38,7 +40,8 @@ jobs:
       shell: cmd
       run: |
         echo Scanning for PII data...
-        java -cp "gosu\gosu.jar" gw.lang.Gosu PIIScanner.gs
+        #java -cp "gosu\gosu.jar" gw.lang.Gosu PIIScanner.gs
+        gosu.bat PIIScanner.gs
         
     - name: Upload PII Scan Report
       uses: actions/upload-artifact@v4
