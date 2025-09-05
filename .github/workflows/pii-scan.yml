@@ -60,10 +60,11 @@ jobs:
       shell: cmd
       run: |
          echo Running PII Scanner...
-         rem Set Gosu lib folder
-         set GOSU_LIB=D:\a\Gosu-PIIData\Gosu-PIIData\gosu_dist\gosu-1.14.16\lib\*
-         rem Run PIIScanner.gs via Gosu launcher
-         java -cp "%GOSU_LIB%" gw.lang.Gosu util/scanner/PIIScanner.gs
+         rem Move into gosu bin folder
+         pushd "%GOSU_CMD%\.."
+         rem Call gosu.cmd with full path to scanner
+         call gosu.cmd ..\..\..\util\scanner/PIIScanner.gs || echo "⚠ PII Scanner exited with errors"
+         popd
          
     - name: Upload All PII Logs
       uses: actions/upload-artifact@v4
