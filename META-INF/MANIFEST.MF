@@ -1,0 +1,9 @@
+Manifest-Version: 1.0
+Archiver-Version: Plexus Archiver
+Created-By: Apache Maven
+Built-By: svenkatachalam
+Build-Jdk: 1.8.0_192-ea
+Implementation-Title: Gosu :: Core Impl
+Implementation-Version: 1.14.20
+Implementation-Vendor-Id: org.gosu-lang.gosu
+
