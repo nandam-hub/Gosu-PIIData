@@ -48,7 +48,7 @@ jobs:
       run: |
          echo Running PII Scanner...
          pushd "%GOSU_CMD%\.."  || exit /b 1
-         gosu.cmd ..\..\..\PIIScanner.gs
+         call gosu.cmd ..\..\..\util\scanner\PIIScanner.gs
          popd
         
     - name: Upload All PII Logs
