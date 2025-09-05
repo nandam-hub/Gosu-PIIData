@@ -50,10 +50,11 @@ jobs:
       run: |
         echo Building Gosu applications...
         if exist dist rmdir /s /q dist
-        rem Compile all .gs files under src/
-        for /R src %%f in (*.gs) do (
-          echo Compiling %%f
-          call "%GOSU_CMD%" %%f
+        if exist build-app.bat (
+          call build-app.bat
+        ) else (
+          echo "⚠ build-app.bat not found, skipping build."
+        )
 
     - name: Run PII Data Scan
       shell: cmd
