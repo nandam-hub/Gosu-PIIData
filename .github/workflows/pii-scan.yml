@@ -89,7 +89,7 @@ jobs:
         endlocal
         
     - name: Generate YAML Report
-      shell: pwsh
+      shell: powershell
       run: |
         $report = @{
           scan_report = @{
