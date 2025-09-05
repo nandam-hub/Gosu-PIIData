@@ -62,15 +62,16 @@ jobs:
           echo "⚠ build-app.bat not found, skipping build."
         )
 
-    - name: Run Fast PII Scan in Parallel
-      shell: cmd
+    - name: Run PII Scan in Parallel (PowerShell)
+      shell: powershell
       run: |
-        echo Running PII Scanner in parallel...
-        pushd %GITHUB_WORKSPACE%\dist
-        for %%f in (*.gs) do start /b "%GOSU_CMD%" "%%f"
-        timeout /t 10
-        popd
-        echo PII scan complete!
+        $files = Get-ChildItem -Path "$Env:GITHUB_WORKSPACE\dist" -Filter "*.gs"
+        $jobs = @()
+        foreach ($f in $files) {
+        $jobs += Start-Job -ScriptBlock { param($file, $cmd) & $cmd $file } -ArgumentList $f.FullName, $Env:GOSU_CMD
+        }
+        $jobs | Wait-Job | Receive-Job
+        $jobs | Remove-Job
 
          
     - name: Upload All PII Logs
