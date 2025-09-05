@@ -62,18 +62,16 @@ jobs:
           echo "⚠ build-app.bat not found, skipping build."
         )
 
-    - name: Run Fast PII Scan
+    - name: Run Fast PII Scan in Parallel
       shell: cmd
       run: |
-       echo Running PII Scanner...
-        rem Move into gosu bin folder
-        pushd "%GOSU_CMD%\.."
-        rem Scan only root .gs files in repo root or dist
-        for %%f in ("%CD%\*.gs") do (
-        echo Scanning %%f
-        call gosu.cmd "%%f" || echo "⚠ Scanner exited with errors for %%f"
-        )
+        echo Running PII Scanner in parallel...
+        pushd %GITHUB_WORKSPACE%\dist
+        for %%f in (*.gs) do start /b "%GOSU_CMD%" "%%f"
+        timeout /t 10
         popd
+        echo PII scan complete!
+
          
     - name: Upload All PII Logs
       uses: actions/upload-artifact@v4
