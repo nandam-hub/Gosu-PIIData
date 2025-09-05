@@ -65,16 +65,51 @@ jobs:
     - name: Run PII Scan
       shell: cmd
       run: |
-        echo Running PII scan on all .gs files in dist...
-        call "%GOSU_CMD%" dist\*.gs || echo "⚠ Scanner exited with errors"
+        echo Running PII scan on all .gs files...
+        call run_scanner.bat
         echo PII scan complete!
+        
+    - name: Generate YAML Report
+      shell: pwsh
+      run: |
+        $report = @{
+          scan_report = @{
+            timestamp = Get-Date -Format "yyyy-MM-dd HH:mm:ss"
+            files_scanned = @()
+            summary = @{
+              total_files = 0
+              files_with_pii = 0
+              pii_types_found = @()
+            }
+          }
+        }
+        
+        Get-ChildItem -Filter "*.gs" | ForEach-Object {
+          $file = $_.Name
+          $content = Get-Content $_.FullName -Raw
+          $piiFound = @()
+          
+          if ($content -match "\d{3}-\d{2}-\d{4}") { $piiFound += @{type="SSN"; status="Found"} }
+          if ($content -match "[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}") { $piiFound += @{type="Email"; status="Found"} }
+          
+          $report.scan_report.files_scanned += @{
+            file = $file
+            pii_detected = $piiFound
+          }
+          $report.scan_report.summary.total_files++
+          if ($piiFound.Count -gt 0) { $report.scan_report.summary.files_with_pii++ }
+        }
+        
+        $report | ConvertTo-Yaml | Out-File -FilePath "pii-scan.yml" -Encoding UTF8
 
          
-    - name: Upload All PII Logs
+    - name: Upload PII Reports
       uses: actions/upload-artifact@v4
       with:
-        name: pii-logs
-        path: '**\*.log'
+        name: pii-reports
+        path: |
+          **\*.log
+          pii-scan.yml
         
     - name: Display Report Summary
       shell: cmd
