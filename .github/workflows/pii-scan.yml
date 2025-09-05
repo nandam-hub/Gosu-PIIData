@@ -88,40 +88,7 @@ jobs:
         echo PII scan complete!
         endlocal
         
-    - name: Generate YAML Report
-      shell: powershell
-      run: |
-        $report = @{
-          scan_report = @{
-            timestamp = Get-Date -Format "yyyy-MM-dd HH:mm:ss"
-            files_scanned = @()
-            summary = @{
-              total_files = 0
-              files_with_pii = 0
-              pii_types_found = @()
-            }
-          }
-        }
-        
-        Get-ChildItem -Filter "*.gs" | ForEach-Object {
-          $file = $_.Name
-          $content = Get-Content $_.FullName -Raw
-          $piiFound = @()
-          
-          if ($content -match "\d{3}-\d{2}-\d{4}") { $piiFound += @{type="SSN"; status="Found"} }
-          if ($content -match "[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}") { $piiFound += @{type="Email"; status="Found"} }
-          
-          $report.scan_report.files_scanned += @{
-            file = $file
-            pii_detected = $piiFound
-          }
-          $report.scan_report.summary.total_files++
-          if ($piiFound.Count -gt 0) { $report.scan_report.summary.files_with_pii++ }
-        }
-        
-        $report | ConvertTo-Yaml | Out-File -FilePath "pii-scan.yml" -Encoding UTF8
-
-         
+    
     - name: Upload PII Reports
       uses: actions/upload-artifact@v4
       with:
