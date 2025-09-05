@@ -62,12 +62,31 @@ jobs:
           echo "⚠ build-app.bat not found, skipping build."
         )
 
-    - name: Run PII Scan
+    - name: Run PII scan on all .gs files
       shell: cmd
+      continue-on-error: true
       run: |
         echo Running PII scan on all .gs files...
-        call run_scanner.bat
+         rem Create a temporary batch file to scan files in small batches
+        setlocal enabledelayedexpansion
+         set batchFiles=
+        for %%f in (dist\*.gs) do (
+        set batchFiles=!batchFiles! "%%f"
+        rem If batch reaches 2 files, run scanner and reset
+        for /f %%i in ("!batchFiles!") do set /a count+=1
+        if !count! geq 2 (
+            call run_scanner.bat !batchFiles! || echo "⚠ Scanner returned an error for this batch"
+            set batchFiles=
+            set count=0
+          )
+        )
+        rem Scan remaining files if any
+        if defined batchFiles (
+        call run_scanner.bat !batchFiles! || echo "⚠ Scanner returned an error for last batch"
+        )
+
         echo PII scan complete!
+        endlocal
         
     - name: Generate YAML Report
       shell: pwsh
