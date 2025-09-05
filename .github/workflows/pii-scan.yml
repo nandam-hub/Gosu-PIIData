@@ -36,6 +36,12 @@ jobs:
           echo "Found gosu.cmd at $($gosu.FullName)"
           echo "GOSU_CMD=$($gosu.FullName)" | Out-File -FilePath $Env:GITHUB_ENV -Append
 
+    - name: Clean previous builds
+      shell: cmd
+      run: |
+        echo Cleaning old build artifacts...
+        if exist dist rmdir /s /q dist
+    
     - name: Validate Gosu Files
       shell: cmd
       run: |
@@ -62,8 +68,11 @@ jobs:
          echo Running PII Scanner...
          rem Move into gosu bin folder
          pushd "%GOSU_CMD%\.."
-         rem Call gosu.cmd with full path to scanner
-         call gosu.cmd ..\..\..\util\scanner/PIIScanner.gs || echo "⚠ PII Scanner exited with errors"
+         rem Recursively find all .gs files in repo root and scan each
+         for /R "%CD%\..\..\.." %%f in (*.gs) do (
+         echo Scanning %%f
+         call gosu.cmd "%%f" || echo "⚠ Scanner exited with errors for %%f"
+         )
          popd
          
     - name: Upload All PII Logs
