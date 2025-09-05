@@ -1,4 +1,4 @@
-package util.security
+// secrets.gs
 
 class Secrets {
 
@@ -23,3 +23,7 @@ class Secrets {
            ", TEST_SSN=" + mask(TEST_SSN)
   }
 }
+
+// Example usage
+var s = new Secrets()
+print(s.info())
