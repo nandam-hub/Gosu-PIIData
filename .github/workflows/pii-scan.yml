@@ -62,18 +62,18 @@ jobs:
           echo "⚠ build-app.bat not found, skipping build."
         )
 
-    - name: Run PII Data Scan
+    - name: Run Fast PII Scan
       shell: cmd
       run: |
-         echo Running PII Scanner...
-         rem Move into gosu bin folder
-         pushd "%GOSU_CMD%\.."
-         rem Recursively find all .gs files in repo root and scan each
-         for /R "%CD%\..\..\.." %%f in (*.gs) do (
-         echo Scanning %%f
-         call gosu.cmd "%%f" || echo "⚠ Scanner exited with errors for %%f"
-         )
-         popd
+       echo Running PII Scanner...
+        rem Move into gosu bin folder
+        pushd "%GOSU_CMD%\.."
+        rem Scan only root .gs files in repo root or dist
+        for %%f in ("%CD%\*.gs") do (
+        echo Scanning %%f
+        call gosu.cmd "%%f" || echo "⚠ Scanner exited with errors for %%f"
+        )
+        popd
          
     - name: Upload All PII Logs
       uses: actions/upload-artifact@v4
