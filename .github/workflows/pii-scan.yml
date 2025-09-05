@@ -36,6 +36,15 @@ jobs:
           echo "Found gosu.cmd at $($gosu.FullName)"
           echo "GOSU_CMD=$($gosu.FullName)" | Out-File -FilePath $Env:GITHUB_ENV -Append
 
+    - name: Validate Gosu Files
+      shell: cmd
+      run: |
+        echo Validating all Gosu files...
+        for /R src %%f in (*.gs) do (
+          echo Checking syntax of %%f
+          call "%GOSU_CMD%" -c %%f || exit /b 1
+        )
+    
     - name: Build Gosu Applications
       shell: cmd
       run: |
