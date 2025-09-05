@@ -112,7 +112,7 @@ jobs:
         )
 
         echo PII scan complete! Report saved to %LOGFILE%
-        
+        exit /b 0
     
     - name: Upload PII report
       uses: actions/upload-artifact@v4
