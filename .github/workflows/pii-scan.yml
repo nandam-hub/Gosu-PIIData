@@ -93,7 +93,7 @@ jobs:
       uses: actions/upload-artifact@v4
       with:
         name: pii-reports
-        path: pii-scan-report.log
+        path: ${{ github.workspace }}\pii-scan-report.log
         
     - name: Display Report Summary
       shell: cmd
