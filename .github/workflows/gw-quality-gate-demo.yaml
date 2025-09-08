@@ -148,32 +148,35 @@ jobs:
           echo "PII scan report not found!"
           )
     
-
       - name: Run a script
         run: |
           echo "All Test Cases passed successfully."     
      
       - name: Call CICD Manager Quality Gate API
+        shell: pwsh
         run: |
-          set -e
-          response=$(curl -s -o response.json -w "%{http_code}" \
-            -X POST "https://cicd-manager-service.api.omega2-andromeda.guidewire.net/api/v3/tenants/valuemom/starsystems/gwcp/applications/cm/quality-gates/usaaqualitygatedemo/verifications" \
-            -H "Authorization: Bearer ${{ secrets.CICD_TOKEN }}" \
-            -H "Content-Type: application/json" \
-            -d "{
-              \"artifact\": {
-                \"type\": \"COMMIT\",
-                \"id\": \"${{ github.event.inputs.commit_id }}\"
-              },
-              \"status\": \"SUCCESSFUL\",
-              \"url\": \"https://bitbucket.example.com/browse/GWCP-0000\",
-              \"comment\": \"Verification Passed from GitHub Actions\"
-            }")
+          $commitId = "${{ github.event.inputs.commit_id }}"
+          $headers = @{
+            "Authorization" = "Bearer ${{ secrets.CICD_TOKEN }}"
+            "Content-Type"  = "application/json"
+          }
 
-          echo "HTTP response code: $response"
-          cat response.json
+          $body = @{
+            artifact = @{
+              type = "COMMIT"
+              id   = $commitId
+            }
+            status  = "SUCCESSFUL"
+            url     = "https://bitbucket.example.com/browse/GWCP-0000"
+            comment = "Verification Passed from GitHub Actions"
+          } | ConvertTo-Json -Depth 3
 
-          if [ "$response" -lt 200 ] || [ "$response" -ge 300 ]; then
-            echo "❌ CICD Manager API call failed"
-            exit 1
-          fi
+          $response = Invoke-RestMethod -Uri "https://cicd-manager-service.api.omega2-andromeda.guidewire.net/api/v3/tenants/valuemom/starsystems/gwcp/applications/cm/quality-gates/usaaqualitygatedemo/verifications" `
+                                        -Method POST `
+                                        -Headers $headers `
+                                        -Body $body `
+                                        -ErrorAction Stop
+
+          Write-Host "✅ CICD Manager API call successful"
+          Write-Host $response | ConvertTo-Json -Depth 5
+
