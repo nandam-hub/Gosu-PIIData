@@ -137,6 +137,7 @@ jobs:
           rem -------------------------
           rem Fail workflow if PII was found
           rem -------------------------
+          echo. >> "%PII_FOUND%"
           if %PII_FOUND%==1 (
               echo ⚠ PII detected in one or more files! Failing task...
               exit /b 1
