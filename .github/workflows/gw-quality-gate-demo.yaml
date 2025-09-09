@@ -11,7 +11,7 @@ on:
 
 jobs:
   QualityGate-GitActionWorkflow:
-    runs-on: windows-latest
+    runs-on: self-hosted
 
     steps:
       - name: Display a message
