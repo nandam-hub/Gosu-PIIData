@@ -3,8 +3,8 @@ echo Building Gosu applications...
 echo.
 echo Creating distribution directory...
 mkdir dist 2>nul
-copy AddNumbers.gs dist\
-copy AddNumbersUI.gs dist\
+copy /Y AddNumbers.gs dist\
+copy /Y AddNumbersUI.gs dist\
 copy gosu.bat dist\
 xcopy gosu dist\gosu\ /E /I /Q /Y
 echo.
