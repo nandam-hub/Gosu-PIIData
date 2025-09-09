@@ -80,6 +80,54 @@ jobs:
             echo "⚠ build-app.bat not found, skipping build."
           )
 
+      - name: Root Folder Only
+        shell: cmd
+        run: |
+          @echo off
+          echo PII Scan Report - %date% %time%
+          echo =================================================
+          echo.
+      
+          rem Initialize variable to track PII detection
+          set "PII_FOUND=0"
+      
+          rem Scan all .gs files in the root folder
+          for %%f in ("%GITHUB_WORKSPACE%\*.gs") do (
+              echo Scanning file: %%f
+      
+              findstr /R /C:"[a-zA-Z0-9._%+-]*@[a-zA-Z0-9.-]*\.[a-zA-Z][a-zA-Z]*" "%%f" >nul && (
+                  echo   Email: Found
+                  set "PII_FOUND=1"
+              ) || echo   Email: None
+      
+              findstr /R /C:"[0-9][0-9][0-9][-.]?[0-9][0-9][0-9][-.]?[0-9][0-9][0-9][0-9]" "%%f" >nul && (
+                  echo   Phone: Found
+                  set "PII_FOUND=1"
+              ) || echo   Phone: None
+      
+              findstr /R /C:"[0-9][0-9][0-9]-[0-9][0-9]-[0-9][0-9][0-9][0-9]" "%%f" >nul && (
+                  echo   SSN: Found
+                  set "PII_FOUND=1"
+              ) || echo   SSN: None
+      
+              findstr /R /C:"[0-9][0-9][0-9][0-9][ -]?[0-9][0-9][0-9][0-9][ -]?[0-9][0-9][0-9][0-9][ -]?[0-9][0-9][0-9][0-9]" "%%f" >nul && (
+                  echo   Credit Card: Found
+                  set "PII_FOUND=1"
+              ) || echo   Credit Card: None
+      
+              echo.
+          )
+      
+          rem Exit with code 1 if any PII was found
+          if %PII_FOUND%==1 (
+              echo ⚠ PII detected! Failing the workflow step...
+              exit /b 1
+          ) else (
+              echo ✅ No PII detected. Task completed successfully.
+              exit /b 0
+          )
+
+
       - name: Simpliefied PII scan
         shell: cmd
         run: |
