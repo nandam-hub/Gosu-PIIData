@@ -105,47 +105,6 @@ jobs:
   
           echo PII scan complete!
           endlocal
-  
-  
-      - name: Run PII Scan
-        shell: cmd
-        run: |
-          echo Running PII Scanner...
-          set LOGFILE=%GITHUB_WORKSPACE%\pii-scan-report.log
-          if exist "%LOGFILE%" del "%LOGFILE%"
-                  rem scan root .gs files
-          for %%f in ("%GITHUB_WORKSPACE%\*.gs") do (
-            echo Scanning %%f >> "%LOGFILE%"
-            call run_scanner.bat "%%f" >> "%LOGFILE%" 2>&1 
-             if errorlevel 1 (
-              echo ⚠ PII detected in %%f >> "%LOGFILE%"
-              set "PII_FOUND=1"
-            )
-            echo. >> "%LOGFILE%"
-          )
-  
-          rem scan dist folder
-          if exist "%GITHUB_WORKSPACE%\dist" (
-            for %%f in ("%GITHUB_WORKSPACE%\dist\*.gs") do (
-              echo Scanning %%f >> "%LOGFILE%"
-              call run_scanner.bat "%%f" >> "%LOGFILE%" 2>&1 || echo "⚠ Scanner error for %%f" >> "%LOGFILE%"
-              echo. >> "%LOGFILE%"
-            )
-          )
-  
-          echo PII scan complete! Report saved to %LOGFILE%
-          rem -------------------------
-          rem Fail workflow if PII was found
-          rem -------------------------
-          echo. >> "%PII_FOUND%"
-          if %PII_FOUND%==1 (
-              echo ⚠ PII detected in one or more files! Failing task...
-              exit /b 1
-          ) else (
-              echo ✅ No PII detected. Task completed successfully.
-              exit /b 0
-          )
-                 
     
       - name: Run a script
         run: |
