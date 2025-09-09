@@ -79,6 +79,42 @@ jobs:
           ) else (
             echo "⚠ build-app.bat not found, skipping build."
           )
+
+      - name: Simplified scan on dist/*.gs files
+        shell: cmd
+        run: |
+          @echo off
+          echo Running PII scan on dist/*.gs files...
+          setlocal enabledelayedexpansion
+          set "PII_FOUND=0"
+      
+          rem -------------------------
+          rem Scan dist folder if exists
+          rem -------------------------
+          if exist "%GITHUB_WORKSPACE%\dist" (
+              for %%f in ("%GITHUB_WORKSPACE%\dist\*.gs") do (
+                  echo Scanning %%f
+                  call run_scanner.bat "%%f"
+                  if errorlevel 1 set "PII_FOUND=1"
+              )
+          ) else (
+              echo No dist folder found.
+          )
+      
+          rem -------------------------
+          rem Fail workflow if PII found
+          rem -------------------------
+          if !PII_FOUND!==1 (
+              echo ⚠ PII detected! Failing task...
+              exit /b 1
+          ) else (
+              echo ✅ No PII detected.
+              exit /b 0
+          )
+      
+          endlocal
+
+
   
       - name: Run PII scan on all .gs files
         shell: cmd
