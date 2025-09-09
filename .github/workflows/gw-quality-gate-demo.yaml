@@ -80,39 +80,23 @@ jobs:
             echo "⚠ build-app.bat not found, skipping build."
           )
 
-      - name: Simplified scan on dist/*.gs files
+      - name: Simpliefied PII scan
         shell: cmd
         run: |
           @echo off
-          echo Running PII scan on dist/*.gs files...
-          setlocal enabledelayedexpansion
-          set "PII_FOUND=0"
-      
-          rem -------------------------
-          rem Scan dist folder if exists
-          rem -------------------------
-          if exist "%GITHUB_WORKSPACE%\dist" (
-              for %%f in ("%GITHUB_WORKSPACE%\dist\*.gs") do (
-                  echo Scanning %%f
-                  call run_scanner.bat "%%f"
-                  if errorlevel 1 set "PII_FOUND=1"
-              )
-          ) else (
-              echo No dist folder found.
-          )
-      
-          rem -------------------------
-          rem Fail workflow if PII found
-          rem -------------------------
-          if !PII_FOUND!==1 (
+          echo Running PII scan in dist folder...
+          rem Call the scanner
+          call "%GITHUB_WORKSPACE%\run_scanner.bat"
+          
+          rem Check if scanner found PII (assuming run_scanner.bat sets errorlevel 1 on PII)
+          if errorlevel 1 (
               echo ⚠ PII detected! Failing task...
               exit /b 1
           ) else (
-              echo ✅ No PII detected.
+              echo ✅ No PII detected. Task completed successfully.
               exit /b 0
           )
-      
-          endlocal
+
 
 
   
