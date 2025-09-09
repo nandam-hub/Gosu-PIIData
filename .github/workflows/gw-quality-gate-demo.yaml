@@ -120,7 +120,7 @@ jobs:
              if errorlevel 1 (
               echo ⚠ PII detected in %%f >> "%LOGFILE%"
               set "PII_FOUND=1"
-            )|
+            )
             echo. >> "%LOGFILE%"
           )
   
