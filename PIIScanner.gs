@@ -44,5 +44,12 @@ var reportFile = new FileWriter("pii-scan-report.log")
 reportFile.write(reportLog.toString())
 reportFile.close()
 
+if (foundPII) {
+  var piifound = new FileWriter("pii-found.log")
+  piifound.write("pii data found")
+  piifound.close()
+  print("pii-found.log created...")
+}
+
 print("PII scan completed. Report saved to: pii-scan-report.log")
 print(reportLog.toString())
