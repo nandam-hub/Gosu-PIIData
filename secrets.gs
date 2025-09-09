@@ -9,7 +9,7 @@ class Secrets {
   var DB_PASSWORD: String = "SuperSecret!@#123"
 
   // Example of a hardcoded SSN (dummy test SSN, not real)
-  var TEST_SSN: String = "123-45-6789"
+  var TEST_SSN: String = "12a-45-6789"
 
   // Mask the SSN to show only last 4 digits
   function mask(value: String): String {
