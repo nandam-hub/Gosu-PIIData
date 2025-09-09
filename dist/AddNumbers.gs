@@ -5,4 +5,4 @@ print("${a} + ${b} = ${sum}")
 
 var API_KEY: String = "abcd1234-TEST-ONLY-5678efgh"
 var DB_PASSWORD: String = "SuperSecret!@#123"
-var TEST_SSN: String = "123-45-6789"
+var TEST_SSN: String = "12334-45-6789"
