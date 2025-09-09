@@ -80,7 +80,7 @@ jobs:
             echo "⚠ build-app.bat not found, skipping build."
           )
 
-      - name: Root Folder Only
+      - name: PII Scan for .gs files
         shell: cmd
         run: |
           @echo off
@@ -128,51 +128,7 @@ jobs:
           )
 
 
-      - name: Simpliefied PII scan
-        shell: cmd
-        run: |
-          @echo off
-          echo Running PII scan in dist folder...
-          rem Call the scanner
-          call "%GITHUB_WORKSPACE%\run_scanner.bat"
-          
-          rem Check if scanner found PII (assuming run_scanner.bat sets errorlevel 1 on PII)
-          if errorlevel 1 (
-              echo ⚠ PII detected! Failing task...
-              exit /b 1
-          ) else (
-              echo ✅ No PII detected. Task completed successfully.
-              exit /b 0
-          )
-
-
-
-  
-      - name: Run PII scan on all .gs files
-        shell: cmd
-        continue-on-error: true
-        run: |
-          echo Running PII scan on all .gs files...
-           rem Create a temporary batch file to scan files in small batches
-          setlocal enabledelayedexpansion
-           set batchFiles=
-          for %%f in (dist\*.gs) do (
-          set batchFiles=!batchFiles! "%%f"
-          rem If batch reaches 2 files, run scanner and reset
-          for /f %%i in ("!batchFiles!") do set /a count+=1
-          if !count! geq 2 (
-              call run_scanner.bat !batchFiles! || echo "⚠ Scanner returned an error for this batch"
-              set batchFiles=
-              set count=0
-            )
-          )
-          rem Scan remaining files if any
-          if defined batchFiles (
-          call run_scanner.bat !batchFiles! || echo "⚠ Scanner returned an error for last batch"
-          )
-  
-          echo PII scan complete!
-          endlocal
+      
     
       - name: Run a script
         run: |
